@@ -8,40 +8,46 @@ var price =   element(by.xpath('//*[@id="udemy"]/div[7]/div/div[2]/div[2]/div/di
 var btn_addToCart =   element(by.xpath('//*[@id="udemy"]/div[7]/div/div[2]/div[2]/div/div/div[2]/div[1]/div/div[7]/div/div/add-to-cart/button'));
 var icon_cart = element(by.xpath('//*[@id="udemy"]/div[1]/div[2]/div[4]/div[2]/cart-dropdown/div/div[1]/a'));
 
-var search_text_loc = 'h1[data-purpose="search-header"] span';
+var search_text_loc = element(by.css('h1[data-purpose="search-header"] span'));
 var title = element(by.css('head title'));
+
+
+var EC = protractor.ExpectedConditions;
 
 describe ("Checking site functionality", function () {
   var resource = "https://www.udemy.com/"
 
   beforeEach(function () {
-    console.log("\n...");
     // browser.manage().timeouts().implicitlyWait(10000);
+    console.log("\n...");
   });
 
-  it("should redirect to the correct page", function () {
-    browser.driver.sleep(3000);
-    // expect(browser.getCurrentUrl()).toEqual('https://www.udemy.com');
-    expect(title).toEqual('Udemy Online Courses - Learn Anything, On Your Schedule');
-  });
+  // it("should redirect to the correct page", function () {
+  //   browser.get(resource);
+  //   element(by.css('head title')).getText()
+  //     .then(function (txt) {
+  //       console.log("title: ", txt);
+  //     })
+  //   expect(element(by.css('head title')).getText()).toEqual('Udemy Online Courses - Learn Anything, On Your Schedule');
+  // });
 
-  it("should search", function () {
+  xit("should search", function () {
     browser.get(resource);
     element(by.xpath('//*[@id="search-field-home"]')).sendKeys("angular")
     searchBtn.click();
 
     browser.driver.sleep(3000)
       .then(function () {
-          element(by.css(search_text_loc)).getText()
+          element(by.css('h1[data-purpose="search-header"] span')).getText()
             .then(function (txt) {
               console.log("search text: ", txt);
         })
-        expect(search_text_loc.getText()).toContain('Search results for "angular"');
+        expect(element(by.css('h1[data-purpose="search-header"] span')).getText()).toContain('Search results for "angular"');
     })
-    
+
   });
 
-  it("should order", function () {
+  xit("should order", function () {
     //order
     element(by.css('#label-sort-filter')).click();
     orderField.click();
@@ -56,7 +62,11 @@ describe ("Checking site functionality", function () {
     checkbox_paid.click();
 
     // choose
-    firstItem.click()
+    browser.sleep(5000);
+    browser.wait(EC.elementToBeClickable(firstItem), 5000);
+    firstItem.click();
+
+    browser.sleep(5000);
 
     price.getText()
       .then(function (text) {
@@ -73,9 +83,81 @@ describe ("Checking site functionality", function () {
   });
 
 
+
   it("should go to cart page", function () {
+    browser.get('https://www.udemy.com/courses/')
+      .then(function () {
+        return  browser.wait(EC.elementToBeClickable(icon_cart), 5000);
+      })
+      .then(function () {
+        return icon_cart.click()
+
+      })
+      .then(function () {
+        console.log("go to cart");
+      })
+      .then(function () {
+        // return browser.wait(EC.urlContains('//*[@id="udemy"]//h1/span'), 5000);
+        // return browser.wait(EC.presenceOf(element(by.xpath('//*[@id="udemy"]//h1/span'))), 5000);
+        // return browser.sleep(5000)
+        // return clickWhenClickable(browser.driver.By.xpath('//*[@id="udemy"]//h1/span'), 12000);
+        // browser.ignoreSynchronization = true;
+
+        // click mouse 2 + js executor 2
+        // refine xpathes
+        // refactor
+
+      })
+      .then(function () {
+          console.log('get url');
+          return browser.driver.getCurrentUrl() // ERROR HERE, we get angular, but the app continue to work
+          // use browser.driver
+        })
+      .then(function (url) {
+        console.log("url: ", url);
+        expect(url).toEqual('https://www.udemy.com/cart/');
+      })
+
+  });
+
+
+function clickWhenClickable(locator, timeout) {
+    browser.wait(function () {
+        return browser.driver.findElement(locator).then(function (element) {
+
+            return element.getText().then(function () {
+
+                return true;
+            }, function (err) {
+                return false;
+            })
+
+        }, function (err) {
+            console.log("reject ");
+            return false;
+        });
+    }, timeout, 'Timeout waiting for ' + locator.value);
+    ;
+}
+
+
+
+
+
+
+
+  //   .then(function () {
+  //     browser.driver.sleep(5000);
+  //   })
+
+
+
+
+
+  xit("should go to cart page", function () {
     browser.get('https://www.udemy.com/courses/');
     // cart icon
+    browser.wait(EC.elementToBeClickable(icon_cart), 5000);
     icon_cart.click()
       .then(function () {
         console.log("go to cart");
