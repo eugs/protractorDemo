@@ -1,71 +1,100 @@
+var searchBtn = element(by.xpath('//*[@id="udemy"]/div[2]/div/div/div[3]/form/div/span/button/span'));
+var orderField = element(by.xpath('//*[@id="udemy"]/div[2]/div/div/div[3]/top-filter-container/div[1]/sort/div/div/ul/li[3]/a'));
+var checkboxEnglish =   element(by.xpath('//*[@id="udemy"]/div[2]/div/div/div[3]/top-filter-container/div[1]/top-filter[2]/div/ul/li[1]/a/span'));
+var checkbox_paid = element(by.xpath('//*[@id="udemy"]/div[2]/div/div/div[3]/top-filter-container/div[1]/top-filter[4]/div/ul/li[1]/a/span'));
+var firstItem = element(by.xpath
+  ('//*[@id="udemy"]/div[2]/div/div/div[3]/ul/li[1]/search-course-card-container/div/div/div[1]/a/img'));
+var price =   element(by.xpath('//*[@id="udemy"]/div[7]/div/div[2]/div[2]/div/div/div[2]/div[1]/div/div[2]/div/div/span[1]'));
+var btn_addToCart =   element(by.xpath('//*[@id="udemy"]/div[7]/div/div[2]/div[2]/div/div/div[2]/div[1]/div/div[7]/div/div/add-to-cart/button'));
+var icon_cart = element(by.xpath('//*[@id="udemy"]/div[1]/div[2]/div[4]/div[2]/cart-dropdown/div/div[1]/a'));
+
+var search_text_loc = 'h1[data-purpose="search-header"] span';
+var title = element(by.css('head title'));
+
 describe ("Checking site functionality", function () {
   var resource = "https://www.udemy.com/"
 
   beforeEach(function () {
     console.log("\n...");
-    browser.manage().timeouts().implicitlyWait(0);
+    // browser.manage().timeouts().implicitlyWait(10000);
   });
 
-  // it("should redirect to the correct page", function () {
-  //   // expect(browser.getCurrentUrl()).toEqual("https://www.lego.com/en-us/");
-  // });
+  it("should redirect to the correct page", function () {
+    browser.driver.sleep(3000);
+    // expect(browser.getCurrentUrl()).toEqual('https://www.udemy.com');
+    expect(title).toEqual('Udemy Online Courses - Learn Anything, On Your Schedule');
+  });
 
   it("should search", function () {
     browser.get(resource);
-    // browser.waitForAngular();
-    // browser.driver.sleep(1000)
-
     element(by.xpath('//*[@id="search-field-home"]')).sendKeys("angular")
-    element(by.xpath('//*[@id="udemy"]/div[2]/div/div/div[3]/form/div/span/button/span')).click();
-    browser.driver.sleep(1000);
-  })
+    searchBtn.click();
+
+    browser.driver.sleep(3000)
+      .then(function () {
+          element(by.css(search_text_loc)).getText()
+            .then(function (txt) {
+              console.log("search text: ", txt);
+        })
+        expect(search_text_loc.getText()).toContain('Search results for "angular"');
+    })
+    
+  });
 
   it("should order", function () {
     //order
     element(by.css('#label-sort-filter')).click();
-    element(by.xpath
-      ('//*[@id="udemy"]/div[2]/div/div/div[3]/top-filter-container/div[1]/sort/div/div/ul/li[3]/a')).click();
+    orderField.click();
 
     // lang
     element(by.css('#label-top-filter-language')).click();
-      // english
-    element(by.xpath('//*[@id="udemy"]/div[2]/div/div/div[3]/top-filter-container/div[1]/top-filter[2]/div/ul/li[1]/a/span')).click()
+    checkboxEnglish.click()
 
     // price
     element(by.css('#label-top-filter-price')).click();
       // paid
-    element(by.xpath('//*[@id="udemy"]/div[2]/div/div/div[3]/top-filter-container/div[1]/top-filter[4]/div/ul/li[1]/a/span')).click();
-
-    // browser.driver.sleep(1000);
+    checkbox_paid.click();
 
     // choose
-    element(by.xpath
-      ('//*[@id="udemy"]/div[2]/div/div/div[3]/ul/li[1]/search-course-card-container/div/div/div[1]/a/img')).click()
+    firstItem.click()
 
-      // browser.driver.sleep(1000);
-
-        element(by.xpath('//*[@id="udemy"]/div[7]/div/div[2]/div[2]/div/div/div[2]/div[1]/div/div[2]/div/div/span[1]')).getText()
-        .then(function (text) {
-            console.log("price: ", text);
-        });
+    price.getText()
+      .then(function (text) {
+          console.log("price: ", text);
+      });
 
         // add to cart click
-        element(by.xpath('//*[@id="udemy"]/div[7]/div/div[2]/div[2]/div/div/div[2]/div[1]/div/div[7]/div/div/add-to-cart/button')).click()
-          .then(function () {
-            browser.driver.sleep(5000);
-          })
+    btn_addToCart.click()
+      // .then(function () {
+        // browser.driver.sleep(10000);
+      // });
 
-        // cart icon
-        element(by.xpath('//*[@id="udemy"]/div[1]/div[1]/div[4]/div[2]/cart-dropdown/div/div[1]/a')).click()
-        .then(function () {
-          console.log("go to cart");
-        })
-        .then(function () {
-          browser.driver.sleep(5000);
-        })
-
-        // expect(browser.getCurrentUrl()).toEqual('https://www.udemy.com/cart/');
+      // browser.driver.sleep(10000);
   });
+
+
+  it("should go to cart page", function () {
+    browser.get('https://www.udemy.com/courses/');
+    // cart icon
+    icon_cart.click()
+      .then(function () {
+        console.log("go to cart");
+      });
+  //   .then(function () {
+  //     browser.driver.sleep(5000);
+  //   })
+
+    expect(browser.getCurrentUrl()).toEqual('https://www.udemy.com/cart/');
+    });
+
+  });
+
+
+
+
+
+
+
 
 
   // it("should order", function () {
@@ -102,4 +131,3 @@ describe ("Checking site functionality", function () {
   //     browser.driver.sleep(3000);
   // })
   //
-  });
